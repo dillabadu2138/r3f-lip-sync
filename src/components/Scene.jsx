@@ -1,9 +1,12 @@
+import { Environment } from "@react-three/drei";
+import { Avatar } from "./Avatar";
+
 function Scene() {
   return (
-    <mesh>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshNormalMaterial />
-    </mesh>
+    <>
+      <Avatar position={[0, -1, 0]} />
+      <Environment preset="city" />
+    </>
   );
 }
 
