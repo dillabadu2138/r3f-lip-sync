@@ -1,20 +1,44 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useGLTF, useFBX, useAnimations } from "@react-three/drei";
+import { useControls } from "leva";
 
 export function Avatar(props) {
+  const { playAudio, script } = useControls({
+    playAudio: false,
+    script: {
+      value: "intro",
+      options: ["intro", "hobby"],
+    },
+  });
+
+  const audio = useMemo(() => new Audio(`/audios/${script}.mp3`), [script]);
+
+  useEffect(() => {
+    if (playAudio) {
+      audio.play();
+      if (script === "intro") setAnimation("Greeting");
+      if (script === "hobby") setAnimation("Dribble");
+    } else {
+      audio.pause();
+      setAnimation("Idle");
+    }
+  }, [playAudio, script]);
+
   const { nodes, materials } = useGLTF("/models/Aaron.glb");
   const { animations: idleAnimation } = useFBX("/animations/Idle.fbx");
   const { animations: greetingAnimation } = useFBX("/animations/Greeting.fbx");
+  const { animations: dribbleAnimation } = useFBX("/animations/Dribble.fbx");
 
   // change animations names
   idleAnimation[0].name = "Idle";
   greetingAnimation[0].name = "Greeting";
+  dribbleAnimation[0].name = "Dribble";
 
   const [animation, setAnimation] = useState("Idle");
 
   const group = useRef();
   const { actions } = useAnimations(
-    [idleAnimation[0], greetingAnimation[0]],
+    [idleAnimation[0], greetingAnimation[0], dribbleAnimation[0]],
     group
   );
 
